@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Toffee - Accept Tips from UPI Instantly | UPI Tip Link Generator</title>
+    <meta name="description" content="Toffee is the easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website. Secure, simple, and free.">
+    <meta name="keywords" content="Toffee, UPI, tips, accept tips, India, tip link, UPI tip generator, embed UPI, digital payments, upi payments, upi donation, upi tip page, upi widget">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Toffee - Accept Tips from UPI Instantly">
+    <meta property="og:description" content="The easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Toffee - Accept Tips from UPI Instantly">
+    <meta name="twitter:description" content="The easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website.">
+    <meta name="twitter:image" content="">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="floating-center">
+        <h1 class="text-center md-5">Toffee</h1>
+        <i class="lead">The easiest way to accept tips in India</i>
+        <hr>
+        <form onsubmit="return false;">
+            <div class="mb-3">
+                <label for="upiId" class="form-label">Enter your UPI ID</label>
+                <input type="text" class="form-control" id="upiId" placeholder="example@upi" required>
+            </div>
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name (optional)</label>
+                <input type="text" class="form-control" id="name" placeholder="Lakshya">
+            </div>
+            <div class="d-flex justify-content-center">
+                <button id="generate-links" class="btn btn-success">Generate Link</button>
+            </div>
+        </form>
+        <div class="mt-5 d-none" id="resultBox">
+            <h5>Embed in your site:</h5>
+            <div class="input-group mb-3">
+                <textarea id="iframeCode" class="form-control" readonly></textarea>
+                <button class="btn btn-outline-secondary" type="button" id="copyIframe"><i class="bi bi-copy"></i></button>
+            </div>
+
+            <h6>Or share a direct page link:</h6>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="directLink" readonly>
+                <button class="btn btn-outline-secondary" type="button" id="copyLink"><i class="bi bi-copy"></i></button>
+            </div>
+        </div>
+    </div>
+    <script src="js/generate.js"></script>
+  </body>
+</html>
