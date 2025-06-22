@@ -4,6 +4,85 @@
 document.addEventListener('DOMContentLoaded', function() {
   const customInput = document.getElementById('customAmount');
   const presetRadios = document.querySelectorAll('input[name="tipType"]');
+  const payButton = document.getElementById('pay-button');
+  const form = document.querySelector('form');
+
+  // Device detection
+  function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  // QR code logic (desktop only)
+  function showQrCode() {
+    // Remove button if present
+    if (payButton) payButton.style.display = 'none';
+    // Check if QR already exists
+    let qrDiv = document.getElementById('upi-qr');
+    if (!qrDiv) {
+      qrDiv = document.createElement('div');
+      qrDiv.id = 'upi-qr';
+      qrDiv.style.textAlign = 'center';
+      qrDiv.style.margin = '24px 0';
+      form.parentNode.insertBefore(qrDiv, form.nextSibling);
+    }
+    // Add QRious if not present
+    if (!window.QRious) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js';
+      script.onload = updateQr;
+      document.body.appendChild(script);
+    } else {
+      updateQr();
+    }
+    function updateQr() {
+      // Get UPI details
+      const upiId = getUpiIdFromUrl();
+      const name = getNameFromUrl() || 'Support';
+      let amount = document.querySelector('input[name="tipType"]:checked')?.value;
+      if ((!amount || amount === '' || amount === undefined) || (customInput && customInput.value && customInput.value.trim() !== '')) {
+        amount = customInput.value;
+      }
+      if (!amount || isNaN(amount) || Number(amount) <= 0) amount = '';
+      let note = `Tip to ${name}`;
+      const customMessage = document.getElementById('customMessage')?.value;
+      if (customMessage && customMessage.trim().length > 0) {
+        note += ': ' + customMessage.trim();
+      }
+      const url = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+      // Create or update QR
+      let qr = qrDiv.querySelector('canvas');
+      if (!qrDiv._qr) {
+        qrDiv.innerHTML = '';
+        qrDiv._qr = new QRious({
+          element: document.createElement('canvas'),
+          value: url,
+          size: 220
+        });
+        qrDiv.appendChild(qrDiv._qr.element);
+        // Make QR clickable
+        qrDiv._qr.element.style.cursor = 'pointer';
+        qrDiv._qr.element.title = 'Click to pay via UPI';
+        qrDiv._qr.element.onclick = function() { window.location.href = url; };
+      } else {
+        qrDiv._qr.value = url;
+      }
+    }
+    // Update QR live on input changes
+    [customInput, document.getElementById('customMessage'), ...presetRadios].forEach(el => {
+      if (el) el.addEventListener('input', updateQr);
+      if (el && el.type === 'radio') el.addEventListener('change', updateQr);
+    });
+  }
+
+  if (!isMobile()) {
+    showQrCode();
+    if (payButton) payButton.style.display = 'none';
+  } else {
+    if (payButton) payButton.style.display = '';
+    // Remove QR if present
+    const qrDiv = document.getElementById('upi-qr');
+    if (qrDiv) qrDiv.remove();
+  }
 
   // Enable the custom input when focused, and deselect presets
   if (customInput) {
@@ -35,13 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (h1) h1.textContent = `Tip ${name}`;
   }
 
-  // UPI payment button logic
-  const payButton = document.getElementById('pay-button');
+  // UPI payment button logic (mobile only)
   if (payButton) {
     payButton.addEventListener('click', () => {
+      if (!isMobile()) return; // Only allow on mobile
       // Get selected amount
       let amount = document.querySelector('input[name="tipType"]:checked')?.value;
-      const customInput = document.getElementById('customAmount');
       // If no preset is selected or custom input has a value, use custom
       if ((!amount || amount === '' || amount === undefined) || (customInput && customInput.value && customInput.value.trim() !== '')) {
         amount = customInput.value;
@@ -79,38 +157,4 @@ function getUpiIdFromUrl() {
   // Support both ?upi= and ?upiId= for compatibility
   return params.get('upi') || params.get('upiId');
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-  // UPI payment button logic
-  const payButton = document.getElementById('pay-button');
-  if (payButton) {
-    payButton.addEventListener('click', () => {
-      // Get selected amount
-      let amount = document.querySelector('input[name="tipType"]:checked')?.value;
-      const customInput = document.getElementById('customAmount');
-      // If no preset is selected or custom input has a value, use custom
-      if ((!amount || amount === '' || amount === undefined) || (customInput && customInput.value && customInput.value.trim() !== '')) {
-        amount = customInput.value;
-      }
-      if (!amount || isNaN(amount) || Number(amount) <= 0) {
-        // Optionally, you could show a custom error message in the UI here
-        return;
-      }
-      // UPI details from URL param
-      const upiId = getUpiIdFromUrl();
-      if (!upiId) {
-        // Optionally, you could show a custom error message in the UI here
-        return;
-      }
-      const payeeName = name || 'Support';
-      let note = `Tip from ${payeeName}`;
-      const customMessage = document.getElementById('customMessage')?.value;
-      if (customMessage && customMessage.trim().length > 0) {
-        note += ': ' + customMessage.trim();
-      }
-      const url = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
-      window.location.href = url;
-    });
-  }
-});
 
