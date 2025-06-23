@@ -2,7 +2,7 @@ document.getElementById("generate-links").addEventListener("click", function() {
     const upiId = document.getElementById("upiId").value; // Gets UPI ID from generator input
     const name = document.getElementById("name").value; // Gets name from generator input
     const price = getToffeePrice(); // Gets toffee price from input, defaults to 5 if not provided
-    const base = "https://toffee-roan.vercel.app/payment.html"; // TODO: Change to hosted link URL after testing
+    const base = "https://getmetoffee.vercel.app/payment.html"; // TODO: Change to hosted link URL after testing
     const params = new URLSearchParams(); // Create a new URLSearchParams object to hold query parameters
 
     if (upiId) params.set("upiId", upiId); // Add UPI ID to query parameters
