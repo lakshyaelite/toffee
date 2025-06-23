@@ -7,6 +7,30 @@ document.addEventListener('DOMContentLoaded', function() {
   const payButton = document.getElementById('pay-button');
   const form = document.querySelector('form');
 
+  // Toffee price and count logic
+  function getParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+  }
+  const toffeePrice = parseInt(getParam('price'), 10) || 5;
+  const toffeeCountInput = document.getElementById('toffeeCount');
+  const priceLabel = document.getElementById('toffeePriceLabel');
+  const customMessage = document.getElementById('customMessage');
+  const toffeeName = getParam('name') || 'Support';
+  // Set the heading to the custom name if present
+  const h1 = document.querySelector('h1');
+  if (h1) h1.textContent = toffeeName;
+
+  function updateToffeePrice() {
+    const count = Math.max(1, parseInt(toffeeCountInput.value, 10) || 1);
+    priceLabel.textContent = `= ₹${toffeePrice * count}`;
+    if (payButton) payButton.textContent = `Support ₹${toffeePrice * count}`;
+  }
+  if (toffeeCountInput) {
+    toffeeCountInput.addEventListener('input', updateToffeePrice);
+    updateToffeePrice();
+  }
+
   // Device detection
   function isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -14,16 +38,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // QR code logic (desktop only)
   function showQrCode() {
-    // Remove button if present
+    const qrDivId = 'upi-qr';
+    let qrDiv = document.getElementById(qrDivId);
+    if (isMobile()) {
+      // Remove QR if present
+      if (qrDiv) qrDiv.remove();
+      if (payButton) payButton.style.display = '';
+      return;
+    }
+    // On desktop, always show QR and hide pay button
     if (payButton) payButton.style.display = 'none';
-    // Check if QR already exists
-    let qrDiv = document.getElementById('upi-qr');
+    // Place QR in #button-qr
     if (!qrDiv) {
       qrDiv = document.createElement('div');
-      qrDiv.id = 'upi-qr';
+      qrDiv.id = qrDivId;
       qrDiv.style.textAlign = 'center';
       qrDiv.style.margin = '24px 0';
-      form.parentNode.insertBefore(qrDiv, form.nextSibling);
+      document.getElementById('button-qr').appendChild(qrDiv);
     }
     // Add QRious if not present
     if (!window.QRious) {
@@ -37,18 +68,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateQr() {
       // Get UPI details
       const upiId = getUpiIdFromUrl();
-      const name = getNameFromUrl() || 'Support';
-      let amount = document.querySelector('input[name="tipType"]:checked')?.value;
-      if ((!amount || amount === '' || amount === undefined) || (customInput && customInput.value && customInput.value.trim() !== '')) {
-        amount = customInput.value;
+      const count = Math.max(1, parseInt(toffeeCountInput.value, 10) || 1);
+      const amount = toffeePrice * count;
+      let note = `Tip to ${toffeeName}`;
+      const msg = customMessage?.value;
+      if (msg && msg.trim().length > 0) {
+        note += ': ' + msg.trim();
       }
-      if (!amount || isNaN(amount) || Number(amount) <= 0) amount = '';
-      let note = `Tip to ${name}`;
-      const customMessage = document.getElementById('customMessage')?.value;
-      if (customMessage && customMessage.trim().length > 0) {
-        note += ': ' + customMessage.trim();
-      }
-      const url = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+      const url = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(toffeeName)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
       // Create or update QR
       let qr = qrDiv.querySelector('canvas');
       if (!qrDiv._qr) {
@@ -68,20 +95,30 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     // Update QR live on input changes
-    [customInput, document.getElementById('customMessage'), ...presetRadios].forEach(el => {
+    [toffeeCountInput, customMessage].forEach(el => {
       if (el) el.addEventListener('input', updateQr);
-      if (el && el.type === 'radio') el.addEventListener('change', updateQr);
     });
+    // Initial QR
+    updateQr();
   }
+  showQrCode();
 
-  if (!isMobile()) {
-    showQrCode();
-    if (payButton) payButton.style.display = 'none';
-  } else {
-    if (payButton) payButton.style.display = '';
-    // Remove QR if present
-    const qrDiv = document.getElementById('upi-qr');
-    if (qrDiv) qrDiv.remove();
+  // UPI payment button logic (mobile only)
+  if (payButton) {
+    payButton.addEventListener('click', () => {
+      if (!isMobile()) return; // Only allow on mobile
+      const upiId = getUpiIdFromUrl();
+      if (!upiId) return;
+      const count = Math.max(1, parseInt(toffeeCountInput.value, 10) || 1);
+      const amount = toffeePrice * count;
+      let note = `Tip to ${toffeeName}`;
+      const msg = customMessage?.value;
+      if (msg && msg.trim().length > 0) {
+        note += ': ' + msg.trim();
+      }
+      const url = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(toffeeName)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+      window.location.href = url;
+    });
   }
 
   // Enable the custom input when focused, and deselect presets

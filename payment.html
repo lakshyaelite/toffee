@@ -17,27 +17,15 @@
         <i class="lead">Show your support!</i>
         <hr>
         <form onsubmit="return false;">
-            <div class="btn-group w-100 mb-3" role="group" aria-label="Tip amounts">
-                <input type="radio" class="btn-check" name="tipType" id="tipType1" value="20" autocomplete="off">
-                <label class="btn btn-outline-primary" for="tipType1" id="labelTip1">₹20</label>
-
-                <input type="radio" class="btn-check" name="tipType" id="tipType2" value="50" autocomplete="off" checked>
-                <label class="btn btn-outline-primary" for="tipType2" id="labelTip2">₹50</label>
-
-                <input type="radio" class="btn-check" name="tipType" id="tipType3" value="100" autocomplete="off">
-                <label class="btn btn-outline-primary" for="tipType3" id="labelTip3">₹100</label>
+            <div class="d-flex justify-content-center align-items-center mb-3" id="toffee-amount-group" style="background:#f7f8fa;border-radius:16px;padding:18px 0 10px 0;gap:12px;">
+                <span style="font-size:2.2rem;">🍬</span>
+                <span style="font-size:1.2rem;">x</span>
+                <input type="number" min="1" class="form-control" id="toffeeCount" value="1" style="width:72px;display:inline-block;margin-left:8px;font-size:1.2rem;text-align:center;">
+                <span id="toffeePriceLabel" class="ms-2" style="font-size:1.1rem;color:#888;"></span>
             </div>
-            <div class="d-flex align-items-center justify-content-center gap-2 mb-2 w-100">
-                <div class="input-group w-100" style="max-width: 100%;">
-                    <span class="input-group-text" id="basic-addon1">₹</span>
-                    <input type="number" class="form-control" id="customAmount" placeholder="Enter amount" min="1" disabled>
-                </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-center gap-2 mb-2 w-100">
-                <div class="input-group w-100" style="max-width: 100%;">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-chat-left-text"></i></span>
-                    <textarea class="form-control" id="customMessage" placeholder="Enter a message (optional)" maxlength="120" rows="2" style="resize:vertical;"></textarea>
-                </div>
+            <div class="position-relative mb-2">
+                <textarea class="form-control" id="customMessage" placeholder="Enter a message (optional)" maxlength="120" rows="2" style="resize:vertical;"></textarea>
+                <span style="position:absolute;bottom:8px;right:8px;font-size:1.2rem;opacity:0.7;"><i class="bi bi-chat-left-text"></i></span>
             </div>
             <div id="button-qr" class="d-flex justify-content-center">
                 <button id="pay-button" class="btn btn-success">Send Money</button>

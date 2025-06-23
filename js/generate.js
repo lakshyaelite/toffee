@@ -1,11 +1,13 @@
 document.getElementById("generate-links").addEventListener("click", function() {
     const upiId = document.getElementById("upiId").value; // Gets UPI ID from generator input
     const name = document.getElementById("name").value; // Gets name from generator input
+    const price = getToffeePrice(); // Gets toffee price from input, defaults to 5 if not provided
     const base = "https://toffee-roan.vercel.app/payment.html"; // TODO: Change to hosted link URL after testing
     const params = new URLSearchParams(); // Create a new URLSearchParams object to hold query parameters
 
     if (upiId) params.set("upiId", upiId); // Add UPI ID to query parameters
     if (name) params.set("name", name); // Add name to query parameters if provided
+    params.set("price", price); // Add price to query parameters
 
     const query = params.toString(); // Convert parameters to a query string
     const link = `${base}?${query}`; // TODO: Use HTTPS protocol in production
@@ -17,6 +19,10 @@ document.getElementById("generate-links").addEventListener("click", function() {
         document.getElementById('resultBox').classList.remove('d-none'); // Show the result box
     }
 });
+
+function getToffeePrice() {
+    return document.getElementById('toffeePrice').value || 5;
+}
 
 // Add copy functionality for iframe code
 const copyIframeBtn = document.getElementById('copyIframe');
