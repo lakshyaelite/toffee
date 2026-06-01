@@ -49,8 +49,17 @@ You can deploy instantly on:
 2. **Share it**
 
    * Direct link: `/payment.html?upi=example@upi&name=Lakshya&price=5`
-   * Embed widget: `<iframe ...></iframe>`
+   * Embed widget: `<iframe src="/iframe.html?upiId=example@upi&name=Creator&price=5" style="border:0;width:100%;max-width:420px;height:520px;"></iframe>`
 
+### Embed details
+
+The project now includes a compact embed page: `iframe.html` for lightweight embeds, and `payment.html` for the full standalone experience. Use the generator on `index.html` to create a ready-to-paste iframe that points to `iframe.html`.
+
+Example embed:
+
+```html
+<iframe src="/iframe.html?upiId=example@upi&name=Creator&price=5" style="border:0;width:100%;max-width:420px;height:520px;"></iframe>
+```
 3. **Get paid!**
 
    * Your supporters can scan the QR code or click the button to pay via UPI.

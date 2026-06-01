@@ -34,15 +34,15 @@ body {
     margin-bottom: 1rem;
 }
 
-.sticky-footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  padding: 1em 0;
-  z-index: 100;
+.site-footer {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding: 1rem 0;
+    color: #6b7280;
+    background: transparent;
 }
+
+.site-footer a { color: inherit; text-decoration: none; }
+
 
 /* ===== Dark Mode ===== */
 @media (prefers-color-scheme: dark) {
@@ -96,8 +96,8 @@ body {
         border-radius: 16px;
     }
 
-    footer {
-            background: #23272b !important;
+    .site-footer {
+            background: transparent !important;
             color: #dbeafe !important;
         }
 

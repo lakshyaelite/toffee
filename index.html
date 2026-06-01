@@ -28,11 +28,14 @@
   <body>
     <main class="d-flex flex-column justify-content-center align-items-center min-vh-100">
       <div class="w-100" style="max-width: 500px;">
-        <h1 class="text-center mb-3">Toffee</h1>
-        <p class="lead text-center mb-4">The easiest way to accept tips in India</p>
-        <hr>
+        <h1 class="text-center mb-2">Toffee</h1>
+        <p class="lead text-center mb-3">Accept small UPI tips instantly — generate an embeddable widget or a direct payment page.</p>
 
-        <form id="toffeeForm" novalidate>
+        <div class="card mb-3 p-3 shadow-sm">
+          <h5 class="mb-2">Create your tip link</h5>
+          <p class="small text-muted">Enter your UPI ID and optional display name. Use the generated iframe to embed a compact tip widget on your site, or share the direct link.</p>
+
+          <form id="toffeeForm" novalidate>
           <div class="mb-3">
             <label for="upiId" class="form-label">Enter your UPI ID</label>
             <input type="text" class="form-control" id="upiId" placeholder="example@upi" required>
@@ -63,6 +66,8 @@
             </button>
           </div>
 
+          <small class="text-muted d-block mb-2">Note: the embed uses a compact iframe (`iframe.html`) separate from the full page view (`payment.html`).</small>
+
           <h6>Or share a direct page link:</h6>
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="directLink" readonly>
@@ -74,9 +79,20 @@
       </div>
     </main>
 
-    <footer class="text-center py-3 border-top sticky-footer">
-      <small class="text-muted">&copy; 2025 <a href="https://lakshyasinghchauhan.com" target="_blank">Lakshya Singh Chauhan</a></small>
+    <footer class="site-footer">
+      <div class="container" style="max-width:900px;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+          <div class="text-center text-md-start">
+            <small>&copy; 2025 <a href="https://lakshyasinghchauhan.com" target="_blank">Lakshya Singh Chauhan</a> · Toffee</small>
+            <div class="small text-muted">Built for easy UPI tips · v1.0</div>
+          </div>
+          <div class="text-center text-md-end">
+            <a href="README.md" class="link-secondary me-2">Docs</a>
+          </div>
+        </div>
+      </div>
     </footer>
+    <script src="js/register.js"></script>
     <script src="js/generate.js"></script>
   </body>
 </html>

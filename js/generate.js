@@ -1,9 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // try to read profile from localStorage (set by register.js)
+  let storedProfile = null;
+  try { storedProfile = JSON.parse(localStorage.getItem('toffeeProfile') || 'null'); } catch(e) { storedProfile = null; }
+  if (storedProfile && storedProfile.displayName) {
+    const nameEl = document.getElementById('name');
+    if (nameEl && (!nameEl.value || nameEl.value.trim() === '')) nameEl.value = storedProfile.displayName;
+  }
+
   document.getElementById("generate-links").addEventListener("click", function() {
     const upiId = document.getElementById("upiId").value;
     const name = document.getElementById("name").value;
     const price = getToffeePrice();
-    const base = "https://getmetoffee.vercel.app/payment.html";
+    // point embed iframe to a compact local embed page
+    const base = "iframe.html";
 
     const params = new URLSearchParams();
     if (upiId) params.set("upiId", upiId);
@@ -11,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     params.set("price", price);
 
     const link = `${base}?${params.toString()}`;
-    const iframeHTML = `<iframe src="${link}" style="border:0;width:100%;max-width:400px;height:500px;"></iframe>`;
+    const iframeHTML = `<iframe src="${link}" style="border:0;width:100%;max-width:420px;height:520px;" title="Toffee embed" loading="lazy" allowtransparency="true"></iframe>`;
     document.getElementById('iframeCode').value = iframeHTML;
     document.getElementById('directLink').value = link;
 
