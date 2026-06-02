@@ -4,95 +4,146 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Toffee — UPI Tip Link Generator</title>
-    <meta name="description" content="Toffee is the easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website. Secure, simple, and free.">
-    <meta name="keywords" content="Toffee, UPI, tips, accept tips, India, tip link, UPI tip generator, embed UPI, digital payments, upi payments, upi donation, upi tip page, upi widget">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="Instantly generate UPI tip links and embed widgets for your website.">
 
-    <!-- OpenGraph -->
-    <meta property="og:title" content="Toffee — Accept Tips from UPI Instantly">
-    <meta property="og:description" content="The easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website.">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Toffee — Accept Tips from UPI Instantly">
-    <meta name="twitter:description" content="The easiest way to accept tips in India. Instantly generate UPI tip links and embed them on your website.">
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+      body { background-color: #f4f6f8; color: #333; }
+      .app-container { max-width: 480px; width: 100%; }
+      .dashboard-card { border: none; border-radius: 1.25rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+      .code-display { background-color: #212529; color: #f8f9fa; font-family: monospace; font-size: 0.85rem; }
+      @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .dashboard-card {
+            background-color: #1e1e1e !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        .form-control, .input-group-text {
+            background-color: #2d2d2d !important;
+            border-color: #404040;
+            color: #ffffff !important;
+        }
+        .form-control::placeholder {
+            color: #888888;
+        }
+        .form-control:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+        }
+        hr {
+            border-color: #404040 !important;
+            opacity: 0.5;
+        }
+        .bg-light {
+            background-color: #2d2d2d !important;
+        }
+        .text-muted, .text-secondary {
+            color: #aaaaaa !important;
+        }
+        .btn-outline-secondary {
+            border-color: #404040;
+            color: #cccccc;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #2d2d2d;
+            border-color: #505050;
+        }
+        h1, h5, .form-label, label {
+            color: #ffffff !important;
+        }
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+        /* Fixes the actual typed text inside the input fields */
+        .form-control {
+            color: #ffffff !important;
+        }
+
+        /* Fixes the static text/icons inside input groups (like the ₹ symbol) */
+        .input-group-text {
+            background-color: #2d2d2d !important;
+            border-color: #404040 !important;
+            color: #aaaaaa !important;
+        }
+        }
+    </style>
   </head>
   <body>
-    <main class="d-flex flex-column justify-content-center align-items-center min-vh-100">
-      <div class="w-100" style="max-width: 500px;">
-        <h1 class="text-center mb-2">Toffee</h1>
-        <p class="lead text-center mb-3">Accept small UPI tips instantly — generate an embeddable widget or a direct payment page.</p>
 
-        <div class="card mb-3 p-3 shadow-sm">
-          <h5 class="mb-2">Create your tip link</h5>
-          <p class="small text-muted">Enter your UPI ID and optional display name. Use the generated iframe to embed a compact tip widget on your site, or share the direct link.</p>
+    <main class="container d-flex flex-column justify-content-center align-items-center min-vh-100 py-5">
+      <div class="app-container">
+        
+        <div class="text-center mb-4">
+          <h1 class="fw-black display-6 m-0">🍬 Toffee</h1>
+          <p class="text-muted small mt-1">Accept small micro-tips in India instantly through UPI</p>
+        </div>
 
-          <form id="toffeeForm" novalidate>
-          <div class="mb-3">
-            <label for="upiId" class="form-label">Enter your UPI ID</label>
-            <input type="text" class="form-control" id="upiId" placeholder="example@upi" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="name" class="form-label">Name (optional)</label>
-            <input type="text" class="form-control" id="name" placeholder="Lakshya">
-          </div>
-
-          <div class="mb-3">
-            <label for="toffeePrice" class="form-label">Price per Toffee</label>
-            <div class="input-group">
-              <span class="input-group-text">₹</span>
-              <input type="number" class="form-control" id="toffeePrice" placeholder="5" min="1" value="5" required>
+        <div class="card dashboard-card p-4 bg-white">
+          <h5 class="fw-bold mb-3">Create your tip link</h5>
+          
+          <form id="toffeeForm" onsubmit="return false;">
+            <div class="mb-3">
+              <label for="upiId" class="form-label small fw-semibold">Enter your UPI ID</label>
+              <input type="text" class="form-control" id="upiId" placeholder="username@bank" required>
             </div>
-          </div>
 
-          <button id="generate-links" type="button" class="btn btn-success w-100">Generate Link</button>
-        </form>
+            <div class="mb-3">
+              <label for="name" class="form-label small fw-semibold">Display Name (optional)</label>
+              <input type="text" class="form-control" id="name" placeholder="e.g. Lakshya">
+            </div>
 
-        <section id="resultBox" class="mt-5 d-none">
-          <h5>Embed in your site:</h5>
-          <div class="input-group mb-3">
-            <textarea id="iframeCode" class="form-control" rows="2" readonly></textarea>
-            <button class="btn btn-outline-secondary" type="button" id="copyIframe" aria-label="Copy iframe code">
-              <i class="bi bi-copy"></i>
+            <div class="mb-4">
+              <label for="toffeePrice" class="form-label small fw-semibold">Base Price per Toffee</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted">₹</span>
+                <input type="number" class="form-control" id="toffeePrice" min="1" value="5" required>
+              </div>
+            </div>
+
+            <button id="generate-links" type="button" class="btn btn-success w-100 py-2.5 rounded-pill fw-semibold">
+              Generate Links & Widgets
             </button>
-          </div>
+          </form>
 
-          <small class="text-muted d-block mb-2">Note: the embed uses a compact iframe (`iframe.html`) separate from the full page view (`payment.html`).</small>
+          <section id="resultBox" class="mt-4 d-none">
+            <hr class="text-muted my-4">
 
-          <h6>Or share a direct page link:</h6>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="directLink" readonly>
-            <button class="btn btn-outline-secondary" type="button" id="copyLink" aria-label="Copy direct link">
-              <i class="bi bi-copy"></i>
-            </button>
-          </div>
-        </section>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-success"><i class="bi bi-code-slash"></i> Embed Widget Code</label>
+              <div class="input-group">
+                <textarea id="iframeCode" class="form-control code-display" rows="3" readonly></textarea>
+                <button class="btn btn-outline-secondary bg-light" type="button" id="copyIframe">
+                  <i class="bi bi-copy"></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label small fw-bold text-primary"><i class="bi bi-link-45deg"></i> Direct Web Page URL</label>
+              <div class="input-group">
+                <input type="text" class="form-control bg-light" id="directLink" readonly>
+                <button class="btn btn-outline-secondary bg-light" type="button" id="copyLink">
+                  <i class="bi bi-copy"></i>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="text-center mt-4">
+          <p class="text-muted small mb-1">
+            &copy; 2026 Toffee · Built by 
+            <a href="https://lakshyasinghchauhan.com" target="_blank" class="text-secondary text-decoration-none fw-semibold">Lakshya Singh Chauhan</a>
+          </p>
+          <div class="text-muted context-version" style="font-size: 0.75rem;">Simple, secure & free peer-to-peer micro-payments</div>
+        </footer>
+
       </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container" style="max-width:900px;">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-          <div class="text-center text-md-start">
-            <small>&copy; 2025 <a href="https://lakshyasinghchauhan.com" target="_blank">Lakshya Singh Chauhan</a> · Toffee</small>
-            <div class="small text-muted">Built for easy UPI tips · v1.0</div>
-          </div>
-          <div class="text-center text-md-end">
-            <a href="README.md" class="link-secondary me-2">Docs</a>
-          </div>
-        </div>
-      </div>
-    </footer>
-    <script src="js/register.js"></script>
     <script src="js/generate.js"></script>
   </body>
 </html>

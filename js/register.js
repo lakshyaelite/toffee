@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   const STORAGE_KEY = 'toffeeProfile';
 
   const profileView = document.getElementById('profileView');
@@ -9,35 +9,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const cancelBtn = document.getElementById('cancelRegister');
   const editBtn = document.getElementById('editProfile');
   const logoutBtn = document.getElementById('logoutProfile');
+  const nameInput = document.getElementById('name');
 
-  function loadProfile() {
+  function getProfile() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+      return JSON.parse(localStorage.getItem(STORAGE_KEY));
+    } catch {
+      return null;
+    }
   }
 
-  function saveProfile(obj) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-    renderProfile();
-  }
-
-  function clearProfile() {
-    localStorage.removeItem(STORAGE_KEY);
-    renderProfile();
-  }
-
-  function renderProfile() {
-    const p = loadProfile();
-    if (p) {
-      profileName.textContent = p.displayName || 'Creator';
+  function syncUI() {
+    const profile = getProfile();
+    if (profile && profile.displayName) {
+      profileName.textContent = profile.displayName;
       profileView.classList.remove('d-none');
       regForm.classList.add('d-none');
-
-      // populate generator name if present
-      const nameInput = document.getElementById('name');
-      if (nameInput && (!nameInput.value || nameInput.value.trim() === '')) {
-        nameInput.value = p.displayName || '';
+      if (nameInput && !nameInput.value) {
+        nameInput.value = profile.displayName;
       }
     } else {
       profileView.classList.add('d-none');
@@ -45,31 +34,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // actions
-  saveBtn.addEventListener('click', function() {
-    const displayName = regDisplayName.value && regDisplayName.value.trim();
-    saveProfile({ displayName });
+  saveBtn.addEventListener('click', () => {
+    const value = regDisplayName.value.trim();
+    if (value) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ displayName: value }));
+      cancelBtn.classList.add('d-none');
+      syncUI();
+    }
   });
 
-  editBtn.addEventListener('click', function() {
-    const p = loadProfile();
-    if (p) {
-      regDisplayName.value = p.displayName || '';
-    }
-    profileView.classList.add('d-none');
+  editBtn.addEventListener('click', () => {
+    const profile = getProfile();
+    regDisplayName.value = profile ? profile.displayName : '';
     regForm.classList.remove('d-none');
     cancelBtn.classList.remove('d-none');
   });
 
-  cancelBtn.addEventListener('click', function() {
+  cancelBtn.addEventListener('click', () => {
     cancelBtn.classList.add('d-none');
-    renderProfile();
+    syncUI();
   });
 
-  logoutBtn.addEventListener('click', function() {
-    clearProfile();
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    if (nameInput) nameInput.value = '';
+    syncUI();
   });
 
-  // init
-  renderProfile();
+  syncUI();
 });

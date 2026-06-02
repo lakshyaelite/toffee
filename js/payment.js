@@ -1,81 +1,92 @@
-document.addEventListener('DOMContentLoaded', function() {
-  function getParam(name) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(name);
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const isEmbed = params.get('embed') === 'true';
+
+  // Toggle layout structure if embedded
+  if (isEmbed) {
+    document.body.classList.add('is-embedded');
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) mainContainer.classList.remove('min-vh-100', 'p-3');
   }
 
-  const payButton = document.getElementById('pay-button');
-  const toffeeCountInput = document.getElementById('toffeeCount');
-  const priceLabel = document.getElementById('toffeePriceLabel');
-  const customMessage = document.getElementById('customMessage');
-  const toffeeName = getParam('name') || 'Support';
-  const toffeePrice = parseInt(getParam('price'), 10) || 5;
+  // DOM Elements
+  const countInput = document.getElementById('toffeeCount');
+  const priceLabel = document.getElementById('totalPriceLabel');
+  const messageInput = document.getElementById('customMessage');
+  const payButton = document.getElementById('payButton');
+  const payeeNameEl = document.getElementById('payeeName');
+  const qrWrapper = document.getElementById('qrWrapper');
+  const qrDiv = document.getElementById('upiQr');
 
-  const h1 = document.querySelector('h1');
-  if (h1) h1.textContent = toffeeName;
+  // Query Parameters
+  const upiId = params.get('upiId') || params.get('upi');
+  const displayName = params.get('name') || 'Support';
+  const basePrice = parseInt(params.get('price'), 10) || 5;
 
-  const wrapper = document.getElementById('button-qr');
-  const qrDiv = document.getElementById('upi-qr');
+  // Set visual configurations
+  payeeNameEl.textContent = displayName;
 
-  function ensureQrLib(cb) {
-    if (window.QRious) return cb();
+  // Gracefully pull in QR engine asset if not cached globally
+  function loadQrEngine(callback) {
+    if (window.QRious) return callback();
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js';
-    script.onload = cb;
+    script.onload = callback;
     document.body.appendChild(script);
   }
 
-  function getUpiIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('upi') || params.get('upiId');
-  }
-
-  function buildUpiUrl(amount) {
-    const upiId = getUpiIdFromUrl();
+  function compileUpiIntent(amount) {
     if (!upiId) return '';
-    let note = `Tip to ${toffeeName}`;
-    const msg = customMessage?.value;
-    if (msg && msg.trim().length > 0) note += ': ' + msg.trim();
-    return `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(toffeeName)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
+    let note = `Toffee to ${displayName}`;
+    const customMsg = messageInput.value.trim();
+    if (customMsg) note += `: ${customMsg}`;
+
+    return `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(displayName)}&am=${encodeURIComponent(amount)}&cu=INR&tn=${encodeURIComponent(note)}`;
   }
 
-  function updateUI() {
-    const count = Math.max(1, parseInt(toffeeCountInput?.value, 10) || 1);
-    const amount = toffeePrice * count;
+  function renderUI() {
+    const units = Math.max(1, parseInt(countInput.value, 10) || 1);
+    const calculatedSum = basePrice * units;
 
-    if (priceLabel) priceLabel.textContent = `= ₹${amount}`;
-    if (payButton) payButton.textContent = `Support ₹${amount}`;
+    priceLabel.textContent = `= ₹${calculatedSum}`;
+    payButton.textContent = `Pay ₹${calculatedSum}`;
 
-    const url = buildUpiUrl(amount);
-    if (!url || !qrDiv) {
-      if (wrapper) wrapper.classList.add('d-none');
+    const upiPayload = compileUpiIntent(calculatedSum);
+    if (!upiPayload) {
+      qrWrapper.classList.add('d-none');
+      payButton.disabled = true;
       return;
     }
 
-    wrapper.classList.remove('d-none');
+    payButton.disabled = false;
+    qrWrapper.classList.remove('d-none');
 
-    ensureQrLib(() => {
-      if (!qrDiv._qr) {
-        qrDiv.innerHTML = '';
-        qrDiv._qr = new QRious({
-          element: document.createElement('canvas'),
-          value: url,
-          size: 220
-        });
-        qrDiv.appendChild(qrDiv._qr.element);
-        qrDiv._qr.element.style.cursor = 'pointer';
-        qrDiv._qr.element.title = 'Click to pay via UPI';
-        qrDiv._qr.element.onclick = () => window.location.href = url;
-      } else {
-        qrDiv._qr.value = url;
-      }
+    loadQrEngine(() => {
+      qrDiv.innerHTML = '';
+      const element = document.createElement('canvas');
+      
+      const qrInstance = new QRious({
+        element: element,
+        value: upiPayload,
+        size: isEmbed ? 150 : 200
+      });
+
+      qrDiv.appendChild(qrInstance.element);
+      
+      // Wire up clickable actions straight to the generated intent deep-link
+      qrInstance.element.style.cursor = 'pointer';
+      qrInstance.element.onclick = () => window.location.href = upiPayload;
+      payButton.onclick = (e) => {
+        e.preventDefault();
+        window.location.href = upiPayload;
+      };
     });
-
-    if (payButton) payButton.onclick = () => window.location.href = url;
   }
 
-  if (toffeeCountInput) toffeeCountInput.addEventListener('input', updateUI);
-  if (customMessage) customMessage.addEventListener('input', updateUI);
+  // Attach event bindings
+  countInput.addEventListener('input', renderUI);
+  messageInput.addEventListener('input', renderUI);
 
-  updateUI();
+  // Initial Paint Execution
+  renderUI();
 });
