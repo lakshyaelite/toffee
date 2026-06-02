@@ -1,95 +1,71 @@
-# 🍬 Toffee — Accept Digital Candy via UPI
+# 🍬 Toffee — UPI Tip Link Generator
 
-Toffee is the easiest way to accept small payments (tips, support money, or donations) in India.  
-It generates UPI tip links and lets you share them as a page or embed them on your website.
+Toffee is a lightweight, zero-bloat, open-source peer-to-peer micro-payment widget generator designed for creators in India. It allows anyone to accept small UPI tips instantly without platform fees, middleman accounts, or complicated database integrations.
 
----
-
-## ✨ Features
-
-- 🪄 **Instant Setup** — Just enter your UPI ID and name, get a shareable link.
-- 💸 **Custom Pricing** — Set how much each "toffee" costs (₹5, ₹10, etc).
-- 📱 **Scan & Pay** — Auto-generated QR code for quick UPI payments.
-- 🎨 **Embeddable Widget** — Drop the iframe code anywhere on your site/blog.
-- 🌓 **Dark Mode Support** — Matches user’s system theme.
-- ⚡ **100% Client-Side** — No backend, no servers, just HTML + JS.
+Built with a clean, responsive, system-adaptive dark mode.
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Features
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/YOUR-USERNAME/toffee.git
-cd toffee
-````
-
-### 2. Open locally
-
-Just open `index.html` in your browser. No build step needed.
-
-### 3. Deploy
-
-You can deploy instantly on:
-
-* [Vercel](https://vercel.com)
-* [Netlify](https://netlify.com)
-* GitHub Pages
+* **Dynamic Parameter Architecture:** No backend server or database required. The payment page configuration is parsed entirely on the client side via URL query parameters.
+* **Unified View (`pay.html`):** The standalone payment page and the embedded compact widget are combined into a single file to keep the codebase hyper-lean.
+* **Native System Dark Mode:** Elegant dark theme support triggered automatically based on user system preferences (`prefers-color-scheme`).
+* **Instant QR Generation:** On-the-fly execution via the highly performant `QRious` engine. QR codes double as direct deep-links for seamless context switching to mobile payment apps (GPay, PhonePe, Paytm).
+* **Modern Clipboard APIs:** Up-to-date, secure copying mechanisms for effortless distribution of snippet parameters.
 
 ---
 
-## 📖 How It Works
+## 📂 File Structure
 
-1. **Generate a tip link**
+```text
+├── index.html        # Creator panel (dashboard config setup)
+├── pay.html          # Unified standalone payment page & embed widget
+└── js/
+    └── generate.js   # Clipboard controls & URL engine logic
+    └── payment.js    # Decodes URL queries, injects QRious, handles intents
 
-   * Go to `index.html`
-   * Enter your UPI ID, name, and price per toffee
-   * Click **Generate Link**
+```
 
-2. **Share it**
+---
 
-   * Direct link: `/payment.html?upi=example@upi&name=Lakshya&price=5`
-   * Embed widget: `<iframe src="/iframe.html?upiId=example@upi&name=Creator&price=5" style="border:0;width:100%;max-width:420px;height:520px;"></iframe>`
+## ⚙️ URL Parameter API
 
-### Embed details
+The `pay.html` file accepts specific string parameters directly through the browser address bar:
 
-The project now includes a compact embed page: `iframe.html` for lightweight embeds, and `payment.html` for the full standalone experience. Use the generator on `index.html` to create a ready-to-paste iframe that points to `iframe.html`.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `upiId` | String | **Yes** | The recipient's active VPA address (e.g., `name@bank`). |
+| `price` | Number | No | The default base price per candy unit (defaults to `5`). |
+| `name` | String | No | The display name shown at the top of the card widget. |
+| `embed` | Boolean | No | Pass `true` to collapse structural card margins and strip footers. |
 
-Example embed:
+### Example Queries
+
+* **Direct Link URL:**
+`https://yourdomain.com/pay.html?upiId=lakshya@okaxis&name=Lakshya&price=10`
+* **Iframe Safe Embed URL:**
+`https://yourdomain.com/pay.html?upiId=lakshya@okaxis&name=Lakshya&price=10&embed=true`
+
+---
+
+## 📋 Integration Example
+
+To display the compact tip component inside your blog sidebar, portfolio, or documentation page, drop the following responsive snippet directly into your HTML layout markup:
 
 ```html
-<iframe src="/iframe.html?upiId=example@upi&name=Creator&price=5" style="border:0;width:100%;max-width:420px;height:520px;"></iframe>
+<iframe 
+  src="[https://yourdomain.com/pay.html?upiId=yourname@bank&name=Creator&price=5&embed=true](https://yourdomain.com/pay.html?upiId=yourname@bank&name=Creator&price=5&embed=true)" 
+  style="border: 0; width: 100%; max-width: 420px; min-height: 480px;" 
+  title="Support me via Toffee" 
+  loading="lazy" 
+  allowtransparency="true">
+</iframe>
+
 ```
-3. **Get paid!**
-
-   * Your supporters can scan the QR code or click the button to pay via UPI.
 
 ---
 
-## 🛠️ Tech Stack
+## ⚖️ License & Credits
 
-* **Frontend**: HTML, CSS, Bootstrap 5
-* **QR Generator**: [QRious](https://github.com/neocotic/qrious)
-
----
-
-## 📷 Screenshots
-
-| Sign-up Page               | Payment Page (Light/Dark)    |
-| -------------------------- | ---------------------------- |
-| ![Signup](docs/signup.png) | ![Payment](docs/payment.png) |
-
----
-
-## 💡 Use Cases
-
-* Content creators accepting tips
-* Open-source developers
-* Small donations for blogs/websites
-* College projects / hackathons
-
----
-
-## 📝 License
-
-MIT License © 2025 [Lakshya Singh Chauhan](https://lakshyasinghchauhan.com)
+Distributed under the MIT License. Built with 💚 by [Lakshya Singh Chauhan](https://lakshyasinghchauhan.com).
